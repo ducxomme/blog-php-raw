@@ -1,0 +1,44 @@
+version: '3'
+
+services: 
+    app:
+        container_name: php
+        build:
+            context: ./docker/php
+            dockerfile: Dockerfile
+        volumes: 
+            - ./php.ini:/usr/local/etc/php/php.ini
+            - ./src:/var/www/html/
+        ports: 
+            - 8080:80
+        links: 
+            - db
+    db:
+        container_name: mysql
+        build: 
+            context: ./docker/db
+            dockerfile: Dockerfile
+        volumes: 
+            - ./docker/db/data:/var/lib/mysql
+            - ./docker/db/my.cnf:/etc/mysql/conf.d/my.cnf
+            - ./docker/db/mysql_conf:/etc/mysql/conf.d
+        environment: 
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_DATABASE=news
+            - MYSQL_USER=root
+            - MYSQL_PASSWORD=root
+        ports: 
+            - 13306:3306
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        environment: 
+            - PMA_ARBITRARY=1
+            - PMA_HOST=db
+            - PMA_USER=root
+            - PMA_PASSWORD=root
+        links: 
+            - db:db
+        ports: 
+            - 4040:80
+        volumes: 
+            - ./docker/phpmyadmin/sessions:/sessions
