@@ -3,7 +3,6 @@
 require './constant.php';
 
 class Connection {
-
     /** @var false|mysqli */
     private $connection;
 
